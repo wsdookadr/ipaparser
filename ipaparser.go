@@ -1,11 +1,14 @@
-package ipa_parser
+package main
 
 import (
 	"archive/zip"
 	"errors"
-	"github.com/DHowett/go-plist"
+	//"github.com/DHowett/go-plist"
+	"howett.net/plist"
 	"io"
 	"log"
+	"flag"
+	"fmt"
 )
 
 //ParseIpa : It parses the given ipa and returns a map from the contents of Info.plist in it
@@ -41,3 +44,23 @@ func ParseIpa(name string) (map[string]interface{}, error) {
 	}
 	return nil, errors.New("Info.plist not found")
 }
+
+func main() {
+	ipa := flag.String("ipa", "", "Provide an IPA file")
+	flag.Parse()
+	if *ipa == "" {
+		fmt.Println("Error: --ipa flag is required")
+		return
+	}
+	parsedData, err := ParseIpa(*ipa)
+	if err != nil {
+		fmt.Printf("Error parsing IPA: %v\n", err)
+		return
+	}
+
+	fmt.Println("Parsed IPA data:")
+	for key, value := range parsedData {
+		fmt.Printf("%s: %v\n", key, value)
+	}
+}
+
